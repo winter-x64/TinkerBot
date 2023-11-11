@@ -31,4 +31,4 @@ class FirebaseCreds(NamedTuple):
 
 
 class BotCreds(NamedTuple):
-    bot_token: str = os.environ.get("BOT_TOKEN")
+    bot_token: str = str(os.environ.get("BOT_TOKEN"))

@@ -10,12 +10,12 @@ from nextcord.ext import commands
 from dotenv import load_dotenv
 
 # * firebase admin
-import firebase_admin
-from firebase_admin import credentials, firestore
+# import firebase_admin
+# from firebase_admin import credentials, firestore
 
 
 # custom imports
-from creds import BotCreds, FirebaseCreds
+# from creds import BotCreds, FirebaseCreds
 
 # load of the env variables in the project environment
 load_dotenv()
@@ -26,10 +26,10 @@ load_dotenv()
 # ? TOKENS and Credentials
 
 # * Discord APT Token
-_TOKEN = BotCreds()
+_TOKEN = os.environ.get("BOT_TOKEN")
 
 # * Firebase Credentials
-_FIREBASECRED = FirebaseCreds()
+# _FIREBASECRED = FirebaseCreds()
 
 # ? ------------------------- config init ----------------------------
 # * client configuration
@@ -38,27 +38,27 @@ intents.members = True
 client = commands.Bot(intents=intents, command_prefix=">")
 
 # * FireBase Realtime DataBase initialzation
-cred = credentials.Certificate(_FIREBASECRED)
-firebase_admin.initialize_app(cred)
+# cred = credentials.Certificate(_FIREBASECRED)
+# firebase_admin.initialize_app(cred)
 
-db = firestore.client()
+# db = firestore.client()
 
 
 # ? ------------------------- Main Code ------------------------------
 # * ------------------------- on_ready  ------------------------------
 @client.event
 async def on_ready():
-    print("\n--------------------------------------------------")
     print(
-        f"""linked successfully!! 🟢
+        f"""--------------------------------------------------
+linked successfully!! 🟢
 Status:-
 Appication ID   : { client.user.id }
 Appication name : { client.user }
 State           : Online
 Ping            : { round( client.latency * 1000 ) }
+--------------------------------------------------
 """
     )
-    print("--------------------------------------------------")
 
 
 # * ------------------------- Test command ---------------------------
