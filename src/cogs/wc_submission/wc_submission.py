@@ -13,7 +13,7 @@ class submitButton(nextcord.ui.View):
         super().__init__()
         self.value = None
 
-    @nextcord.ui.button(label="✔️ Submit", style=nextcord.ButtonStyle.green)
+    @nextcord.ui.button(label="Submit", style=nextcord.ButtonStyle.green)
     async def submit(self, btn: nextcord.ui.Button, interaction: Interaction) -> None:
         await interaction.followup.send(
             content=f"Hey {interaction.user.display_name}, Thanks for submitting you answer [submit Btn]",
@@ -53,6 +53,8 @@ class submission_models(nextcord.ui.Modal):
     async def callback(self, interaction: Interaction) -> None:
         submitted_answer = self.wc_answer.value
         submitted_wc_query = self.wc_query.value
+
+        self.flag = True
 
         await interaction.followup.send(
             content=f"Hey {interaction.user.display_name}, \n {submitted_answer} \n {submitted_wc_query} [submit model]",
