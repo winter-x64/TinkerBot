@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 
 # custom imports
 # from creds import BotCreds, FirebaseCreds
+from creds import BotCreds
 
 # load of the env variables in the project environment
 load_dotenv()
@@ -26,7 +27,8 @@ load_dotenv()
 # ? TOKENS and Credentials
 
 # * Discord APT Token
-_TOKEN = os.environ.get("BOT_TOKEN")
+# _TOKEN = os.environ.get("BOT_TOKEN")
+_TOKEN = BotCreds()
 
 # * Firebase Credentials
 # _FIREBASECRED = FirebaseCreds()
@@ -49,7 +51,8 @@ client = commands.Bot(intents=intents, command_prefix=">")
 @client.event
 async def on_ready():
     print(
-        f"""--------------------------------------------------
+        f"""
+--------------------------------------------------
 linked successfully!! 🟢
 Status:-
 Appication ID   : { client.user.id }

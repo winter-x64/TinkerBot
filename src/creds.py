@@ -30,5 +30,6 @@ class FirebaseCreds(NamedTuple):
         return {i: getattr(self, i) for i in var}
 
 
-class BotCreds(NamedTuple):
+def BotCreds():
     bot_token: str = str(os.environ.get("BOT_TOKEN"))
+    return bot_token

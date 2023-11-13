@@ -15,10 +15,6 @@ class submitButton(nextcord.ui.View):
 
     @nextcord.ui.button(label="Submit", style=nextcord.ButtonStyle.green)
     async def submit(self, btn: nextcord.ui.Button, interaction: Interaction) -> None:
-        await interaction.followup.send(
-            content=f"Hey {interaction.user.display_name}, Thanks for submitting you answer [submit Btn]",
-            ephemeral=True,
-        )
         self.value = True
         self.stop()
 
@@ -41,7 +37,7 @@ class submission_models(nextcord.ui.Modal):
         )
 
         self.wc_query = nextcord.ui.TextInput(
-            label="Query",
+            label="FeedBack",
             min_length=2,
             max_length=200,
             placeholder="Share you queries",
@@ -56,10 +52,14 @@ class submission_models(nextcord.ui.Modal):
 
         self.flag = True
 
-        await interaction.followup.send(
-            content=f"Hey {interaction.user.display_name}, \n {submitted_answer} \n {submitted_wc_query} [submit model]",
-            ephemeral=True,
-        )
+        try:
+            # Use interaction.response.send_message instead of interaction.followup.send
+            await interaction.response.send_message(
+                content=f"Hey {interaction.user.display_name}, \n {submitted_answer} \n {submitted_wc_query} [submit model]",
+                ephemeral=True,
+            )
+        except nextcord.errors.NotFound as e:
+            print(f"Error sending message: {e}")
 
     # add the datebase post
 
@@ -71,28 +71,35 @@ class wc_submission(commands.Cog):
 
     @nextcord.slash_command()
     async def wc_run(self, interaction: Interaction, question: str) -> None:
-        await interaction.response.defer()
-
         view = submitButton()
         model = submission_models()
 
-        await interaction.followup.send(content=f"{question}", view=view)
+        await interaction.response.defer()
+
+        embed = nextcord.Embed(
+            title="Weekly Smackdown",
+            description=question,
+            color=nextcord.Colour.blurple(),
+        )
+        await interaction.followup.send(embed=embed, view=view)
         await view.wait()
+
+        print("view_ value ", view.value)
 
         if view.value is None:
             return
         elif view.value:
-            await interaction.response.send_modal(modal=model)
+            await interaction.followup.send(model)
 
         if model.flag:
             await interaction.followup.send(
                 content=f"Hey {interaction.user.display_name}, Thanks for submitting you answer",
-                ephemeral=True,
+                # ephemeral=True,
             )
         else:
             await interaction.followup.send(
                 content=f"Hey {interaction.user.display_name}, An unexpected error occurred, please try again",
-                ephemeral=True,
+                # ephemeral=True,
             )
 
 
