@@ -21,11 +21,12 @@ class submitButton(nextcord.ui.View):
 
 # ? ------------------------- Model Class -----------------------------
 class submission_models(nextcord.ui.Modal):
-    def __init__(self) -> None:
+    def __init__(self, view: nextcord.ui.View) -> None:
         super().__init__(
             title="Weekly Submissions",
         )
         self.flag = None
+        self.view = view  # Store the view instance for later use
 
         # input fields for the submission
         self.wc_answer = nextcord.ui.TextInput(
@@ -40,11 +41,12 @@ class submission_models(nextcord.ui.Modal):
             label="FeedBack",
             min_length=2,
             max_length=200,
-            placeholder="Share you queries",
+            placeholder="Share your queries",
         )
 
         self.add_item(item=self.wc_answer)
         self.add_item(item=self.wc_query)
+
 
     async def callback(self, interaction: Interaction) -> None:
         submitted_answer = self.wc_answer.value
@@ -72,7 +74,7 @@ class wc_submission(commands.Cog):
     @nextcord.slash_command()
     async def wc_run(self, interaction: Interaction, question: str) -> None:
         view = submitButton()
-        model = submission_models()
+        model = submission_models(view)
 
         await interaction.response.defer()
 
