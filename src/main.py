@@ -13,6 +13,11 @@ from dotenv import load_dotenv
 # import firebase_admin
 # from firebase_admin import credentials, firestore
 
+
+# custom imports
+# from creds import BotCreds, FirebaseCreds
+from creds import BotCreds
+
 # load of the env variables in the project environment
 load_dotenv()
 
@@ -22,10 +27,11 @@ load_dotenv()
 # ? TOKENS and Credentials
 
 # * Discord APT Token
-_TOKEN = os.getenv("DiscordApiToken")
+# _TOKEN = os.environ.get("BOT_TOKEN")
+_TOKEN = BotCreds()
 
 # * Firebase Credentials
-# _FIREBASECRED = 'firebaseCred.json'
+# _FIREBASECRED = FirebaseCreds()
 
 # ? ------------------------- config init ----------------------------
 # * client configuration
@@ -44,17 +50,18 @@ client = commands.Bot(intents=intents, command_prefix=">")
 # * ------------------------- on_ready  ------------------------------
 @client.event
 async def on_ready():
-    print("\n--------------------------------------------------")
     print(
-        f"""linked successfully!! 🟢
+        f"""
+--------------------------------------------------
+linked successfully!! 🟢
 Status:-
 Appication ID   : { client.user.id }
 Appication name : { client.user }
 State           : Online
 Ping            : { round( client.latency * 1000 ) }
+--------------------------------------------------
 """
     )
-    print("--------------------------------------------------")
 
 
 # * ------------------------- Test command ---------------------------
