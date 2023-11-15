@@ -6,5 +6,5 @@ module.exports = (client) => {
         const modal = require(`../modals/${file}`)
         client.modals.set(modal.id, modal)
     })
-    console.log(chalk.magenta("Buttons Loaded ✅"))
+    console.log(chalk.hex("#ff009e")("Modals Loaded ✅"))
 };
