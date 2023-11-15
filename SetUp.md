@@ -1,22 +1,16 @@
 # Project Environment Setup ( Recommended  )
 
-- Create an Env 
-    - you can use any tool ( Poetry is recommended )
-    ```bash
-    pip install poetry
-    ```
-    or if your on mac or Linux 
-    ```bash
-    pip3 install poetry
-    ```
-- Install all dependencies 
+- Install dependencies
+```bash
+npm install
+```
 
-    ```bash 
-    poetry install
-    ```
+- Setup the `.env` file.
+```env
+token=YOUR_TOKEN
+```
 
-- To activate the Environment 
-
-    ```bash
-    poetry shell
-    ```
+- Run the project
+```bash
+npm start
+```
