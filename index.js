@@ -36,6 +36,7 @@ client.developers = config.developers;
 client.admins = config.admins;
 client.supabase = supabaseClient;
 client.gameNight = config.gameNight;
+client.eventTeamRole = config.eventTeamRole;
 
 module.exports = client;
 

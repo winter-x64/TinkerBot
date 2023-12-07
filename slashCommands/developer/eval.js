@@ -30,6 +30,7 @@ module.exports = {
             ]
         }
     ],
+    developerOnly: true,
     run: async (client, interaction) => {
 
         if (!developers.includes(interaction.user.id)) return interaction.reply('This command is only for development purposes only.');

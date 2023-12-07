@@ -104,7 +104,7 @@ module.exports = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle('ℹ️ Wrong question!')
-                                .setDescription(`You have already submitted answer upto question number ${participant[0].question_number -1}.`)
+                                .setDescription(`You have already submitted answer upto question number ${participant[0].question_number - 1}.`)
                                 .setColor('#ff0000')
                                 .setFooter({
                                     text: `${interaction.user.username}`,
@@ -133,7 +133,6 @@ module.exports = {
                 }
 
             } else {
-                // If answer is correct, update the question_number and current_level else deduct a life (lives).
                 // Connect with GameNight db and check if answer is correct.
                 const { data: gameNight, error } = await supabaseClient.from('GameNight').select('*').eq('question_number', question_number);
                 console.log(gameNight);
@@ -163,10 +162,12 @@ module.exports = {
                     // Answer is correct
                     // Update question_number and current_level
                     // update current level such that for each 3 successful submissions, current_level increases by 1
+                    const oldLevel = participant[0].current_level;
                     let newLevel = participant[0].current_level;
                     if (participant[0].question_number % 3 == 0) {
                         newLevel = participant[0].current_level + 1;
                     }
+                    console.log("New Level : " + newLevel);
                     const { data: _updatedParticipant, error } = await supabaseClient.from('participant').update({ question_number: question_number + 1, current_level: newLevel }).eq('discord_id', interaction.user.id);
 
                     if (error) {
@@ -186,12 +187,37 @@ module.exports = {
                             ephemeral: true
                         });
                     }
-
+                    if (oldLevel != newLevel) {
+                        const guildMember = interaction.guild.members.cache.get(interaction.user.id);
+                        const { level1, level2, level3, level4 } = client.gameNight.roles;
+                        if (newLevel === 2) {
+                            guildMember.roles.add(level2);
+                            guildMember.roles.remove([level1]);
+                        } else if (newLevel === 3) {
+                            guildMember.roles.add(level3);
+                            guildMember.roles.remove([level2]);
+                        } else if (newLevel === 4) {
+                            guildMember.roles.add(level4);
+                            guildMember.roles.remove([level3]);
+                        }
+                    }
                     return interaction.reply({
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle('✅ Correct answer!')
                                 .setDescription(`You have submitted the correct answer for question number ${question_number}.`)
+                                .addFields({
+                                    name: "💖Lives left",
+                                    value: `${participant[0].lives}`
+                                }, {
+                                    name: "🏆Current level",
+                                    value: `${newLevel}`,
+                                    inline: true
+                                }, {
+                                    name: "⁉️ Next Question",
+                                    value: `${participant[0].question_number + 1}`,
+                                    inline: true
+                                })
                                 .setColor('#00ff00')
                                 .setFooter({
                                     text: `${interaction.user.username}`,
@@ -229,6 +255,18 @@ module.exports = {
                             new EmbedBuilder()
                                 .setTitle('❌ Incorrect answer!')
                                 .setDescription(`You have submitted the incorrect answer for question number ${question_number}.`)
+                                .addFields({
+                                    name: "💖Lives left",
+                                    value: `${participant[0].lives - 1}`
+                                }, {
+                                    name: "🏆Current level",
+                                    value: `${participant[0].current_level}`,
+                                    inline: true
+                                }, {
+                                    name: "⁉️ Question",
+                                    value: `${participant[0].question_number}`,
+                                    inline: true
+                                })
                                 .setColor('#ff0000')
                                 .setFooter({
                                     text: `${interaction.user.username}`,

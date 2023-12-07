@@ -31,7 +31,7 @@ module.exports = {
                     new EmbedBuilder()
                         .setTitle('ℹ️ Something went wrong!')
                         .setDescription('An error occured while registering you for the game night event.')
-                        .setColor('#ff0000')
+                        .setColor('Red')
                         .setFooter({
                             text: `${interaction.user.username}`,
                             iconURL: interaction.user.displayAvatarURL()
@@ -49,7 +49,7 @@ module.exports = {
                     new EmbedBuilder()
                         .setTitle('ℹ️ Already registered!')
                         .setDescription('You have already registered for the game night event.')
-                        .setColor('#ff0000')
+                        .setColor('Yellow')
                         .setFooter({
                             text: `${interaction.user.username}`,
                             iconURL: interaction.user.displayAvatarURL()
@@ -70,7 +70,7 @@ module.exports = {
                     discord_nick_name: guildMember?.nickname ?? interaction.user.globalName,
                     current_level: 1,
                     question_number: 1,
-                    lives : 10
+                    lives: 10
                 }
             ]);
 
@@ -81,7 +81,7 @@ module.exports = {
                         new EmbedBuilder()
                             .setTitle('ℹ️ Something went wrong!')
                             .setDescription('An error occured while registering you for the game night event.')
-                            .setColor('#ff0000')
+                            .setColor('Orange')
                             .setFooter({
                                 text: `${interaction.user.username}`,
                                 iconURL: interaction.user.displayAvatarURL()
@@ -92,31 +92,34 @@ module.exports = {
                 });
             }
 
+            const { registerRole, level1 } = client.gameNight.roles;
+            guildMember.roles.add([registerRole, level1]);
+
             interaction.reply({
                 embeds: [
                     new EmbedBuilder()
-                        .setTitle('✅ Registered!')
-                        .setDescription('You have been registered for the game night event.')
-                        .setColor('#00ff00')
+                        .setTitle('✅ Successfully Registered!')
+                        .setDescription(`You have been registered for the game night event.\nYou have recieved the <@&${registerRole}> role as well as 10 lives.\nYou can start submitting your answers using the **</submit:1181853531972575252>** command.\n\nYou are currently on level 1. Answering 3 questions will take you to the next level. There are a total of 4 levels and if you can complete the 4th level (12 questions), you will be the winner of the game night event.`)
+                        .setColor('Aqua')
                         .setFooter({
                             text: `${interaction.user.username}`,
                             iconURL: interaction.user.displayAvatarURL()
                         })
                         .setTimestamp()
                 ],
-                ephemeral: true
             });
 
-            const gameNightRegister = client.gameNight.registerChannel;
-            interaction.guild.channels.cache.get(gameNightRegister).send({
+            const { registerChannel } = client.gameNight;
+            interaction.guild.channels.cache.get(registerChannel).send({
                 embeds: [
                     new EmbedBuilder()
                         .setTitle('🎉 New Registration!')
                         .setDescription(`**${interaction.user.username}** has registered for the game night event.`)
-                        .setColor('#00ff00')
+                        .setColor('Aqua')
                         .setImage(interaction.user.displayAvatarURL({
                             extension: 'png',
                         }))
+                        .addFields({ name: '**User ID**', value: interaction.user.id, inline: true }, { name: '**User Name**', value: interaction.user.username, inline: true }, { name: '**Nick Name**', value: guildMember?.nickname ?? interaction.user.globalName, inline: true })
                         .setTimestamp()
                 ]
             });
