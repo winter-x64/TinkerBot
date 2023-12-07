@@ -21,8 +21,9 @@ const connectSupaClient = () => {
 }
 const supabaseClient = connectSupaClient();
 
-const config = require('./config.json');
+const config = client.config = require('./config.json');
 
+client.config.emojis = require('./emojis.json');
 client.commands = new Collection();
 client.aliases = new Collection();
 client.slashCommands = new Collection();
