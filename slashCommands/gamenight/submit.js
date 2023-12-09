@@ -26,13 +26,14 @@ module.exports = {
     /**
      * 
      * @param {Client} client 
-     * @param {import('discord.js').Interaction} interaction 
+     * @param {import('discord.js').CommandInteraction} interaction 
      * @returns 
      */
     run: async (client, interaction) => {
         /**
          * @type {import("@supabase/supabase-js").SupabaseClient}
          */
+
 
         const supabaseClient = client.supabase;
 

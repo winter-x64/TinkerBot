@@ -21,7 +21,7 @@ module.exports = {
     /**
      * 
      * @param {Client} client 
-     * @param {import("discord.js").Interaction} interaction 
+     * @param {import("discord.js").CommandInteraction} interaction 
      */
     run: async (client, interaction) => {
         /**
@@ -30,31 +30,36 @@ module.exports = {
         const supabase = client.supabase;
         const questionNumber = interaction.options.getInteger("question_number") ?? null;
         let showAnswers = interaction.options.getBoolean("show-answers") ?? false;
-        if (showAnswers && !(interaction.guild.members.cache.get(interaction.user.id).roles.cache.has(client.eventTeamRole))) showAnswers = false;
+        const { guild, user: interactionUser } = interaction;
 
-        let response;
-        if (questionNumber === null) {
-            response = await supabase.from("GameNight").select("question_number, questions" + showAnswers ? ", answers" : "");
-        }
-        else {
-            response = await supabase.from("GameNight").select("question_number, questions" + showAnswers ? ", answers" : "").eq("question_number", questionNumber);
-        }
-        const { data: questions, error } = response;
+        interaction.deferReply({ephemeral: showAnswers}).then(async (interaction) => {
 
-        if (error) return interaction.reply("An error occurred while trying to get the questions.");
-        if (questions.length === 0) return interaction.reply("There are no questions for the current game night event.");
-        const embed = new EmbedBuilder()
-            .setTitle("Game Night Questions")
-            .setColor("Blurple")
-            .setDescription("Here are the questions for the current game night event.");
-        let fields = [];
-        for (let i = 0; i < questions.length; i++) {
-            fields.push({
-                name: `**\`Question ${questions[i].question_number}\`**`,
-                value: `${questions[i].question}${showAnswers ? `\n\n**Answer:** \`${questions[i].answer}\`` : ""}`
-            });
-        }
-        embed.addFields(fields);
-        interaction.reply({ embeds: [embed] });
+
+            if (showAnswers && !(guild.members.cache.get(interactionUser.id).roles.cache.has(client.eventTeamRole))) showAnswers = false;
+
+            let response;
+            if (questionNumber === null) {
+                response = await supabase.from("GameNight").select("question_number, questions" + showAnswers ? ", answers" : "");
+            }
+            else {
+                response = await supabase.from("GameNight").select("question_number, questions" + showAnswers ? ", answers" : "").eq("question_number", questionNumber);
+            }
+            const { data: questions, error } = response;
+
+            if (error) return interaction.reply("An error occurred while trying to get the questions.");
+            if (questions.length === 0) return interaction.reply("There are no questions for the current game night event.");
+            const embed = new EmbedBuilder()
+                .setTitle("🎮 Game Night Questions ")
+                .setColor("Gold");
+            let fields = [];
+            for (let i = 0; i < questions.length; i++) {
+                fields.push({
+                    name: `#️⃣  **__Question ${questions[i].question_number}__**`,
+                    value: `➡️  \`${questions[i].question}\`${showAnswers ? `\n\n✅  ||**\`Answer:\`**\` ${questions[i].answer}\`||\n\n` : "\n\n"}`
+                });
+            }
+            embed.addFields(fields);
+            interaction.edit({ embeds: [embed], ephemeral: showAnswers });
+        });
     }
 }

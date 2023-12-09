@@ -14,7 +14,7 @@ module.exports = {
     /**
      * 
      * @param {Client} client 
-     * @param {import("discord.js").Interaction} interaction 
+     * @param {import("discord.js").CommandInteraction} interaction 
      */
     run: async (client, interaction) => {
         /**
@@ -22,31 +22,32 @@ module.exports = {
          */
         const supabase = client.supabase;
         const player = interaction.options.getUser('player') ?? interaction.user;
-        const { data: stats, error } = await supabase.from('participant').select('*').eq('discord_id', player.id);
-        if (error) return interaction.reply('An error occurred while trying to get the stats.');
-        if (stats.length === 0) return interaction.reply('This player has no stats.');
-        const embed = new EmbedBuilder()
-            .setTitle(`${player.username}'s Stats`)
-            .setColor('Navy')
-            .setDescription('Here are the stats for this player.');
-        const hardCoreHearts = client.config.emojis.hardcoreHeart
-        let fields = [
-            {
-                name : "💖 Lives left",
-                value : `${hardCoreHearts.repeat(stats[0].lives)} (${stats[0].lives}) `
-            },
-            {
-                name: "🏆 Current Level",
-                value: `${stats[0].current_level}`
-            },
-            {
-                name: "🎮 Next Question",
-                value: `${stats[0].question_number}`
-            },
+        interaction.deferReply().then(async (interaction) => {
+            const { data: stats, error } = await supabase.from('participant').select('*').eq('discord_id', player.id);
+            if (error) return interaction.edit('An error occurred while trying to get the stats.');
+            if (stats.length === 0) return interaction.edit('This player has no stats.');
+            const embed = new EmbedBuilder()
+                .setTitle(`${stats[0]?.discord_nick_name ?? player?.globalName ?? player.username}'s progress`)
+                .setColor('Gold');
+            const hardCoreHearts = client.config.emojis.hardcoreHeart
+            let fields = [
+                {
+                    name: "**\💖 Lives left**",
+                    value: `➡️   ${hardCoreHearts.repeat(stats[0].lives)} **(${stats[0].lives})**\n`
+                },
+                {
+                    name: "**🏆 Current Level**",
+                    value: `➡️   **\`${stats[0].current_level}\`**\n`
+                },
+                {
+                    name: "**\🎮 Next Question**",
+                    value: `➡️   **\`${stats[0].question_number}\`**\n`
+                },
 
-        ];
-        embed.addFields(fields);
+            ];
+            embed.addFields(fields);
 
-        return interaction.reply({ embeds: [embed] });
+            return interaction.edit({ embeds: [embed] });
+        });
     }
 }
